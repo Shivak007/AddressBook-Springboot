@@ -1,46 +1,46 @@
 package com.bridgelabz.addressbookapp.controller;
 
+import com.bridgelabz.addressbookapp.dto.AddressBookDTO;
 import com.bridgelabz.addressbookapp.model.AddressBook;
+import com.bridgelabz.addressbookapp.service.AddressBookService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/addressbook")
 public class AddressBookController {
 
-    private Map<Long, AddressBook> data = new HashMap<>();
-    private Long counter = 1L;
+    private final AddressBookService service;
+
+    public AddressBookController(AddressBookService service) {
+        this.service = service;
+    }
+
+    @PostMapping
+    public ResponseEntity<AddressBook> create(@RequestBody AddressBookDTO dto) {
+        return ResponseEntity.ok(service.create(dto));
+    }
 
     @GetMapping
     public ResponseEntity<List<AddressBook>> getAll() {
-        return ResponseEntity.ok(new ArrayList<>(data.values()));
+        return ResponseEntity.ok(service.getAll());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<AddressBook> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(data.get(id));
-    }
-
-    @PostMapping
-    public ResponseEntity<AddressBook> create(@RequestBody AddressBook contact) {
-        contact.setId(counter++);
-        data.put(contact.getId(), contact);
-        return ResponseEntity.ok(contact);
+        return ResponseEntity.ok(service.getById(id));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<AddressBook> update(@PathVariable Long id,
-                                              @RequestBody AddressBook contact) {
-        contact.setId(id);
-        data.put(id, contact);
-        return ResponseEntity.ok(contact);
+                                              @RequestBody AddressBookDTO dto) {
+        return ResponseEntity.ok(service.update(id, dto));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> delete(@PathVariable Long id) {
-        data.remove(id);
-        return ResponseEntity.ok("Deleted successfully");
+        return ResponseEntity.ok(service.delete(id));
     }
 }
