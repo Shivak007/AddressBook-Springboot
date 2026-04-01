@@ -1,5 +1,5 @@
 package com.bridgelabz.addressbookapp.controller;
-
+import jakarta.validation.*;
 import com.bridgelabz.addressbookapp.dto.AddressBookDTO;
 import com.bridgelabz.addressbookapp.model.AddressBook;
 import com.bridgelabz.addressbookapp.service.AddressBookService;
@@ -18,12 +18,6 @@ public class AddressBookController {
     @Autowired
     private AddressBookService service;
 
-    @PostMapping
-    public ResponseEntity<AddressBook> create(@RequestBody AddressBookDTO dto) {
-        log.info("Creating new contact: {}", dto);
-        return ResponseEntity.ok(service.create(dto));
-    }
-
     @GetMapping
     public ResponseEntity<List<AddressBook>> getAll() {
         log.info("Fetching all contacts");
@@ -36,10 +30,14 @@ public class AddressBookController {
         return ResponseEntity.ok(service.getById(id));
     }
 
+    @PostMapping
+    public ResponseEntity<AddressBook> create(@Valid @RequestBody AddressBookDTO dto) {
+        return ResponseEntity.ok(service.create(dto));
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<AddressBook> update(@PathVariable Long id,
-                                              @RequestBody AddressBookDTO dto) {
-        log.info("Updating contact id: {} with data: {}", id, dto);
+                                              @Valid @RequestBody AddressBookDTO dto) {
         return ResponseEntity.ok(service.update(id, dto));
     }
 
