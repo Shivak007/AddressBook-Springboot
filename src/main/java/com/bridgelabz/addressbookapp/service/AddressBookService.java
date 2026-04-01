@@ -4,36 +4,52 @@ import com.bridgelabz.addressbookapp.dto.AddressBookDTO;
 import com.bridgelabz.addressbookapp.model.AddressBook;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class AddressBookService {
 
-    private Map<Long, AddressBook> data = new HashMap<>();
+    private List<AddressBook> addressBookList = new ArrayList<>();
     private Long counter = 1L;
 
     public AddressBook create(AddressBookDTO dto) {
         AddressBook contact = new AddressBook(counter++, dto.getName(), dto.getCity());
-        data.put(contact.getId(), contact);
+        addressBookList.add(contact);
         return contact;
     }
 
     public List<AddressBook> getAll() {
-        return new ArrayList<>(data.values());
+        return addressBookList;
     }
 
     public AddressBook getById(Long id) {
-        return data.get(id);
+        for (AddressBook contact : addressBookList) {
+            if (contact.getId().equals(id)) {
+                return contact;
+            }
+        }
+        return null;
     }
 
     public AddressBook update(Long id, AddressBookDTO dto) {
-        AddressBook contact = new AddressBook(id, dto.getName(), dto.getCity());
-        data.put(id, contact);
-        return contact;
+        for (AddressBook contact : addressBookList) {
+            if (contact.getId().equals(id)) {
+                contact.setName(dto.getName());
+                contact.setCity(dto.getCity());
+                return contact;
+            }
+        }
+        return null;
     }
 
     public String delete(Long id) {
-        data.remove(id);
-        return "Deleted successfully";
+        for (int i = 0; i < addressBookList.size(); i++) {
+            if (addressBookList.get(i).getId().equals(id)) {
+                addressBookList.remove(i);
+                return "Deleted successfully";
+            }
+        }
+        return "Contact not found";
     }
 }
